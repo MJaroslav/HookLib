@@ -21,7 +21,7 @@ sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = co
 
 idea.module.inheritOutputDirs = true
 
-version = "v0.8"
+version = "v0.8.1"
 group = "com.github.mjaroslav.hooklib"
 archivesBaseName = "HookLib"
 
