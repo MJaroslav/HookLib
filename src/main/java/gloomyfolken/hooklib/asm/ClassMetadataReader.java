@@ -8,12 +8,14 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import static gloomyfolken.hooklib.asm.HookLoggerManager.getLogger;
+
 /**
  * Позволяет при помощи велосипеда из костылей искать методы внутри незагруженных классов
  * и общие суперклассы для чего угодно. Работает через поиск class-файлов в classpath, и, в случае провала -
  * ищет через рефлексию. Для работы с майнкрафтом используется сабкласс под названием DeobfuscationMetadataReader,
- *
  */
+@SuppressWarnings("rawtypes")
 public class ClassMetadataReader {
     private static Method m;
 
@@ -26,6 +28,7 @@ public class ClassMetadataReader {
         }
     }
 
+    @SuppressWarnings("ConstantConditions")
     public byte[] getClassData(String className) throws IOException {
         String classResourceName = '/' + className.replace('.', '/') + ".class";
         return IOUtils.toByteArray(ClassMetadataReader.class.getResourceAsStream(classResourceName));
@@ -45,7 +48,7 @@ public class ClassMetadataReader {
             String className = superClasses.get(i);
             MethodReference methodReference = getMethodReference(className, name, desc);
             if (methodReference != null) {
-                System.out.println("found virtual method: " + methodReference);
+                getLogger().debug("found virtual method: " + methodReference);
                 return methodReference;
             }
         }
@@ -90,7 +93,7 @@ public class ClassMetadataReader {
      * и заканчивая данным типом)
      */
     public ArrayList<String> getSuperClasses(String type) {
-        ArrayList<String> superclasses = new ArrayList<String>(1);
+        ArrayList<String> superclasses = new ArrayList<>(1);
         superclasses.add(type);
         while ((type = getSuperClass(type)) != null) {
             superclasses.add(type);
@@ -134,7 +137,7 @@ public class ClassMetadataReader {
         return "java/lang/Object";
     }
 
-    private class CheckSuperClassVisitor extends ClassVisitor {
+    private static class CheckSuperClassVisitor extends ClassVisitor {
 
         String superClassName;
 
@@ -163,7 +166,7 @@ public class ClassMetadataReader {
 
         @Override
         public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
-            System.out.println("visiting " + name + "#" + desc);
+            getLogger().debug("visiting " + name + "#" + desc);
             if ((access & Opcodes.ACC_PRIVATE) == 0 && checkSameMethod(name, desc, targetName, targetDesc)) {
                 found = true;
                 targetName = name;
@@ -185,11 +188,13 @@ public class ClassMetadataReader {
             this.desc = desc;
         }
 
+        @SuppressWarnings("unused")
         public Type getType() {
             return Type.getMethodType(desc);
         }
 
-        @Override public String toString() {
+        @Override
+        public String toString() {
             return "MethodReference{" +
                     "owner='" + owner + '\'' +
                     ", name='" + name + '\'' +

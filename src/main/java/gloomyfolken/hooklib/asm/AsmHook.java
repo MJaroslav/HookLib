@@ -8,6 +8,7 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.objectweb.asm.Opcodes.*;
@@ -26,14 +27,14 @@ public class AsmHook implements Cloneable, Comparable<AsmHook> {
 
     private String targetClassName; // через точки
     private String targetMethodName;
-    private List<Type> targetMethodParameters = new ArrayList<Type>(2);
+    private final List<Type> targetMethodParameters = new ArrayList<>(2);
     private Type targetMethodReturnType; //если не задано, то не проверяется
 
     private String hooksClassName; // через точки
     private String hookMethodName;
     // -1 - значение return
-    private List<Integer> transmittableVariableIds = new ArrayList<Integer>(2);
-    private List<Type> hookMethodParameters = new ArrayList<Type>(2);
+    private final List<Integer> transmittableVariableIds = new ArrayList<>(2);
+    private final List<Type> hookMethodParameters = new ArrayList<>(2);
     private Type hookMethodReturnType = Type.VOID_TYPE;
     private boolean hasReturnValueParameter; // если в хук-метод передается значение из return
 
@@ -79,7 +80,7 @@ public class AsmHook implements Cloneable, Comparable<AsmHook> {
     }
 
     protected boolean isMandatory() {
-         return isMandatory;
+        return isMandatory;
     }
 
     protected HookInjectorFactory getInjectorFactory() {
@@ -290,15 +291,16 @@ public class AsmHook implements Cloneable, Comparable<AsmHook> {
         sb.append(hooksClassName).append('#').append(hookMethodName);
         sb.append(hookMethodDescription);
 
-        sb.append(", ReturnCondition=" + returnCondition);
-        sb.append(", ReturnValue=" + returnValue);
-        if (returnValue == ReturnValue.PRIMITIVE_CONSTANT) sb.append(", Constant=" + primitiveConstant);
-        sb.append(", InjectorFactory: " + injectorFactory.getClass().getName());
-        sb.append(", CreateMethod = " + createMethod);
+        sb.append(", ReturnCondition=").append(returnCondition);
+        sb.append(", ReturnValue=").append(returnValue);
+        if (returnValue == ReturnValue.PRIMITIVE_CONSTANT) sb.append(", Constant=").append(primitiveConstant);
+        sb.append(", InjectorFactory: ").append(injectorFactory.getClass().getName());
+        sb.append(", CreateMethod = ").append(createMethod);
 
         return sb.toString();
     }
 
+    @SuppressWarnings("NullableProblems")
     @Override
     public int compareTo(AsmHook o) {
         if (injectorFactory.isPriorityInverted && o.injectorFactory.isPriorityInverted) {
@@ -314,10 +316,14 @@ public class AsmHook implements Cloneable, Comparable<AsmHook> {
         return new AsmHook().new Builder();
     }
 
+    @Override
+    public AsmHook clone() throws CloneNotSupportedException {
+        return (AsmHook) super.clone();
+    }
+
+    @SuppressWarnings({"UnusedReturnValue", "unused"})
     public class Builder extends AsmHook {
-
         private Builder() {
-
         }
 
         /**
@@ -364,9 +370,7 @@ public class AsmHook implements Cloneable, Comparable<AsmHook> {
          * @see TypeHelper
          */
         public Builder addTargetMethodParameters(Type... parameterTypes) {
-            for (Type type : parameterTypes) {
-                AsmHook.this.targetMethodParameters.add(type);
-            }
+            AsmHook.this.targetMethodParameters.addAll(Arrays.asList(parameterTypes));
             return this;
         }
 
@@ -637,7 +641,7 @@ public class AsmHook implements Cloneable, Comparable<AsmHook> {
         /**
          * Напрямую указывает тип, возвращаемый хук-методом.
          *
-         * @param type
+         * @param type Возвращаемый тип
          */
         protected void setHookMethodReturnType(Type type) {
             AsmHook.this.hookMethodReturnType = type;
@@ -775,8 +779,8 @@ public class AsmHook implements Cloneable, Comparable<AsmHook> {
             }
 
             try {
-                hook = (AsmHook) AsmHook.this.clone();
-            } catch (CloneNotSupportedException impossible) {
+                hook = AsmHook.this.clone();
+            } catch (CloneNotSupportedException ignored) { // impossible
             }
 
             if (hook.targetClassName == null) {

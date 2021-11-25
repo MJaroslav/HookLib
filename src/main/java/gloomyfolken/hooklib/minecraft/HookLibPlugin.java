@@ -7,6 +7,7 @@ import cpw.mods.fml.relauncher.IFMLLoadingPlugin;
 import java.lang.reflect.Field;
 import java.util.Map;
 
+@SuppressWarnings("unused")
 public class HookLibPlugin implements IFMLLoadingPlugin {
 
     private static boolean obf;
@@ -38,7 +39,8 @@ public class HookLibPlugin implements IFMLLoadingPlugin {
     }
 
     @Override
-    public void injectData(Map<String, Object> data) {}
+    public void injectData(Map<String, Object> data) {
+    }
 
     public static boolean getObfuscated() {
         if (!checked) {

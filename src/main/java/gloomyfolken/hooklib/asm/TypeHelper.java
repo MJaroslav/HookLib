@@ -10,9 +10,10 @@ import java.util.Map;
  * Класс, позволяющий создавать типы из разных входных данных.
  * Эти типы нужны для того, чтобы задавать параметры и возвращаемые значения методов.
  */
+@SuppressWarnings("unused")
 public class TypeHelper {
 
-    private static final Map<String, Type> primitiveTypes = new HashMap<String, Type>(9);
+    private static final Map<String, Type> primitiveTypes = new HashMap<>(9);
 
     static {
         primitiveTypes.put("void", Type.VOID_TYPE);

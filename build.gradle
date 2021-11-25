@@ -1,7 +1,6 @@
 buildscript {
 	repositories {
 		mavenCentral()
-		jcenter()
         maven {
             name = "github"
             url = "https://github.com/juanmuscaria/maven/raw/master"
@@ -21,7 +20,7 @@ sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = co
 
 idea.module.inheritOutputDirs = true
 
-version = "v0.8.1"
+version = "v0.9"
 group = "com.github.mjaroslav.hooklib"
 archivesBaseName = "HookLib"
 

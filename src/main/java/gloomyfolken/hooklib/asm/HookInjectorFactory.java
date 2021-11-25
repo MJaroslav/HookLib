@@ -24,7 +24,8 @@ public abstract class HookInjectorFactory {
 
         public static final MethodEnter INSTANCE = new MethodEnter();
 
-        private MethodEnter() {}
+        private MethodEnter() {
+        }
 
         @Override
         public HookInjectorMethodVisitor createHookInjector(MethodVisitor mv, int access, String name, String desc,
@@ -51,7 +52,7 @@ public abstract class HookInjectorFactory {
 
     static class LineNumber extends HookInjectorFactory {
 
-        private int lineNumber;
+        private final int lineNumber;
 
         public LineNumber(int lineNumber) {
             this.lineNumber = lineNumber;

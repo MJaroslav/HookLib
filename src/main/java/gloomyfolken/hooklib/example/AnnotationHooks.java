@@ -10,6 +10,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.common.ForgeHooks;
 
+@SuppressWarnings("unused")
 public class AnnotationHooks {
 
     /**
@@ -47,6 +48,7 @@ public class AnnotationHooks {
         return entity.height > 1.5f;
     }
 
+    @SuppressWarnings("ConstantConditions")
     public static int getBrightness(Entity entity, float f) {
         int oldValue = 0;
         int j = ((oldValue >> 20) & 15) / 2;

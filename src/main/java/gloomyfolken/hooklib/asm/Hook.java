@@ -19,6 +19,7 @@ import java.lang.annotation.Target;
  * названием и списком параметров нет. Если всё же нужно указать, то это можно сделать через returnType.
  */
 @Target(ElementType.METHOD)
+@SuppressWarnings("unused")
 public @interface Hook {
 
     /**
@@ -50,11 +51,11 @@ public @interface Hook {
      * могут встретиться (например, это можно сделать при обфускации через ProGuard)
      * Если возвращаемый тип не указан, то хук применяется к первому методу, подходящему
      * по названию и списку параметров.
-     *
+     * <p>
      * Основной предполагаемый способ использования этого параметра - вместе с createMethod = true.
      * В этом случае созданный метод будет по умолчанию иметь тот же возвращаемый тип, что и хук-метод,
      * а с помощью этого параметра это можно изменить.
-     *
+     * <p>
      * Указывать нужно полное название класса: java.lang.String, void, int и т.д.
      */
     String returnType() default "";
@@ -134,5 +135,6 @@ public @interface Hook {
      * Можно использовать только когда injectOnExit() == true и целевой метод возвращает не void.
      */
     @Target(ElementType.PARAMETER)
-    @interface ReturnValue {}
+    @interface ReturnValue {
+    }
 }

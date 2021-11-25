@@ -15,16 +15,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static gloomyfolken.hooklib.asm.HookLoggerManager.getLogger;
+
 /**
  * Этот трансформер занимается вставкой хуков с момента запуска майнкрафта. Здесь сосредоточены все костыли,
  * которые необходимы для правильной работы с обфусцированными названиями методов.
  */
+@SuppressWarnings("unused")
 public class MinecraftClassTransformer extends HookClassTransformer implements IClassTransformer {
 
     static MinecraftClassTransformer instance;
     private Map<Integer, String> methodNames;
 
-    private static List<IClassTransformer> postTransformers = new ArrayList<IClassTransformer>();
+    private static final List<IClassTransformer> postTransformers = new ArrayList<>();
 
     public MinecraftClassTransformer() {
         instance = this;
@@ -34,9 +37,9 @@ public class MinecraftClassTransformer extends HookClassTransformer implements I
                 long timeStart = System.currentTimeMillis();
                 methodNames = loadMethodNames();
                 long time = System.currentTimeMillis() - timeStart;
-                logger.debug("Methods dictionary loaded in " + time + " ms");
+                getLogger().debug("Methods dictionary loaded in " + time + " ms");
             } catch (IOException e) {
-                logger.severe("Can not load obfuscated method names", e);
+                getLogger().severe("Can not load obfuscated method names", e);
             }
         }
 
@@ -52,7 +55,7 @@ public class MinecraftClassTransformer extends HookClassTransformer implements I
         if (resourceStream == null) throw new IOException("Methods dictionary not found");
         DataInputStream input = new DataInputStream(new BufferedInputStream(resourceStream));
         int numMethods = input.readInt();
-        HashMap<Integer, String> map = new HashMap<Integer, String>(numMethods);
+        HashMap<Integer, String> map = new HashMap<>(numMethods);
         for (int i = 0; i < numMethods; i++) {
             map.put(input.readInt(), input.readUTF());
         }
@@ -63,8 +66,8 @@ public class MinecraftClassTransformer extends HookClassTransformer implements I
     @Override
     public byte[] transform(String oldName, String newName, byte[] bytecode) {
         bytecode = transform(newName, bytecode);
-        for (int i = 0; i < postTransformers.size(); i++) {
-            bytecode = postTransformers.get(i).transform(oldName, newName, bytecode);
+        for (IClassTransformer postTransformer : postTransformers) {
+            bytecode = postTransformer.transform(oldName, newName, bytecode);
         }
         return bytecode;
     }
@@ -93,7 +96,7 @@ public class MinecraftClassTransformer extends HookClassTransformer implements I
         if (srgName.startsWith("func_")) {
             int first = srgName.indexOf('_');
             int second = srgName.indexOf('_', first + 1);
-            return Integer.valueOf(srgName.substring(first + 1, second));
+            return Integer.parseInt(srgName.substring(first + 1, second));
         } else {
             return -1;
         }

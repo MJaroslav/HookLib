@@ -1,6 +1,5 @@
 package gloomyfolken.hooklib.asm;
 
-import gloomyfolken.hooklib.asm.HookLogger.SystemOutLogger;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 
@@ -9,18 +8,18 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-public class HookClassTransformer {
+import static gloomyfolken.hooklib.asm.HookLoggerManager.getLogger;
 
-    public HookLogger logger = new SystemOutLogger();
-    protected HashMap<String, List<AsmHook>> hooksMap = new HashMap<String, List<AsmHook>>();
-    private HookContainerParser containerParser = new HookContainerParser(this);
+public class HookClassTransformer {
+    protected final HashMap<String, List<AsmHook>> hooksMap = new HashMap<>();
+    private final HookContainerParser containerParser = new HookContainerParser(this);
     protected ClassMetadataReader classMetadataReader = new ClassMetadataReader();
 
     public void registerHook(AsmHook hook) {
         if (hooksMap.containsKey(hook.getTargetClassName())) {
             hooksMap.get(hook.getTargetClassName()).add(hook);
         } else {
-            List<AsmHook> list = new ArrayList<AsmHook>(2);
+            List<AsmHook> list = new ArrayList<>(2);
             list.add(hook);
             hooksMap.put(hook.getTargetClassName(), list);
         }
@@ -39,7 +38,7 @@ public class HookClassTransformer {
 
         if (hooks != null) {
             Collections.sort(hooks);
-            logger.debug("Injecting hooks into class " + className);
+            getLogger().debug("Injecting hooks into class " + className);
             try {
                 /*
                  Начиная с седьмой версии джавы, сильно изменился процесс верификации байткода.
@@ -57,23 +56,23 @@ public class HookClassTransformer {
                 cr.accept(hooksWriter, java7 ? ClassReader.SKIP_FRAMES : ClassReader.EXPAND_FRAMES);
                 bytecode = cw.toByteArray();
                 for (AsmHook hook : hooksWriter.injectedHooks) {
-                    logger.debug("Patching method " + hook.getPatchedMethodName());
+                    getLogger().debug("Patching method " + hook.getPatchedMethodName());
                 }
                 hooks.removeAll(hooksWriter.injectedHooks);
             } catch (Exception e) {
-                logger.severe("A problem has occurred during transformation of class " + className + ".");
-                logger.severe("Attached hooks:");
+                getLogger().severe("A problem has occurred during transformation of class " + className + ".");
+                getLogger().severe("Attached hooks:");
                 for (AsmHook hook : hooks) {
-                    logger.severe(hook.toString());
+                    getLogger().severe(hook.toString());
                 }
-                logger.severe("Stack trace:", e);
+                getLogger().severe("Stack trace:", e);
             }
 
             for (AsmHook notInjected : hooks) {
                 if (notInjected.isMandatory()) {
                     throw new RuntimeException("Can not find target method of mandatory hook " + notInjected);
                 } else {
-                    logger.warning("Can not find target method of hook " + notInjected);
+                    getLogger().warning("Can not find target method of hook " + notInjected);
                 }
             }
         }

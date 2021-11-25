@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings("unused")
 public class DiskHookLib {
 
     public static void main(String[] args) throws IOException {
@@ -34,8 +35,9 @@ public class DiskHookLib {
         }
     }
 
-    private static List<File> getFiles(String postfix, File dir) throws IOException {
-        ArrayList<File> files = new ArrayList<File>();
+    @SuppressWarnings("ConstantConditions")
+    private static List<File> getFiles(String postfix, File dir) {
+        ArrayList<File> files = new ArrayList<>();
         File[] filesArray = dir.listFiles();
         if (filesArray != null) {
             for (File file : dir.listFiles()) {

@@ -8,9 +8,11 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
+import static gloomyfolken.hooklib.asm.HookLoggerManager.getLogger;
+
 public class HookContainerParser {
 
-    private HookClassTransformer transformer;
+    private final HookClassTransformer transformer;
     private String currentClassName;
     private String currentMethodName;
     private String currentMethodDesc;
@@ -25,7 +27,7 @@ public class HookContainerParser {
     Ключ - номер параметра, значение - номер локальной переменной для перехвата
     или -1 для перехвата значения наверху стека.
      */
-    private HashMap<Integer, Integer> parameterAnnotations = new HashMap<Integer, Integer>();
+    private final HashMap<Integer, Integer> parameterAnnotations = new HashMap<>();
 
     private boolean inHookAnnotation;
 
@@ -38,21 +40,22 @@ public class HookContainerParser {
     }
 
     protected void parseHooks(String className) {
-        transformer.logger.debug("Parsing hooks container " + className);
+        getLogger().debug("Parsing hooks container " + className);
         try {
             transformer.classMetadataReader.acceptVisitor(className, new HookClassVisitor());
         } catch (IOException e) {
-            transformer.logger.severe("Can not parse hooks container " + className, e);
+            getLogger().severe("Can not parse hooks container " + className, e);
         }
     }
 
+    @SuppressWarnings("unused")
     protected void parseHooks(byte[] classData) {
 
     }
 
     private void invalidHook(String message) {
-        transformer.logger.warning("Found invalid hook " + currentClassName + "#" + currentMethodName);
-        transformer.logger.warning(message);
+        getLogger().warning("Found invalid hook " + currentClassName + "#" + currentMethodName);
+        getLogger().warning(message);
     }
 
     private void createHook() {
@@ -208,7 +211,7 @@ public class HookContainerParser {
         @Override
         public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
             if (HOOK_DESC.equals(desc)) {
-                annotationValues = new HashMap<String, Object>();
+                annotationValues = new HashMap<>();
                 inHookAnnotation = true;
             }
             return new HookAnnotationVisitor();

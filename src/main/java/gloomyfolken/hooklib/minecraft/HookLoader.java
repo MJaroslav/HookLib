@@ -12,11 +12,12 @@ import java.util.Map;
  * Удобная базовая реализация IFMLLoadingPlugin для использования HookLib.
  * Регистрировать хуки и контейнеры нужно в registerHooks().
  */
+@SuppressWarnings("unused")
 public abstract class HookLoader implements IFMLLoadingPlugin {
 
     private static DeobfuscationTransformer deobfuscationTransformer;
 
-    private static ClassMetadataReader deobfuscationMetadataReader;
+    private static final ClassMetadataReader deobfuscationMetadataReader;
 
     static {
         deobfuscationMetadataReader = new DeobfuscationMetadataReader();
@@ -44,8 +45,8 @@ public abstract class HookLoader implements IFMLLoadingPlugin {
     public static ClassMetadataReader getDeobfuscationMetadataReader() {
         return deobfuscationMetadataReader;
     }
-	
-	static DeobfuscationTransformer getDeobfuscationTransformer() {
+
+    static DeobfuscationTransformer getDeobfuscationTransformer() {
         if (HookLibPlugin.getObfuscated() && deobfuscationTransformer == null) {
             deobfuscationTransformer = new DeobfuscationTransformer();
         }

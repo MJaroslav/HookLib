@@ -6,12 +6,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static gloomyfolken.hooklib.asm.HookLoggerManager.getLogger;
+
+@SuppressWarnings("unused")
 public class VariableIdHelper {
 
-    private static ClassMetadataReader classMetadataReader = new ClassMetadataReader();
+    private static final ClassMetadataReader classMetadataReader = new ClassMetadataReader();
 
     public static List<String> listLocalVariables(byte[] classData, final String methodName, Type... argTypes) {
-        final List<String> localVariables = new ArrayList<String>();
+        final List<String> localVariables = new ArrayList<>();
         String methodDesc = Type.getMethodDescriptor(Type.VOID_TYPE, argTypes);
         final String methodDescWithoutReturnType = methodDesc.substring(0, methodDesc.length() - 1);
 
@@ -46,7 +49,7 @@ public class VariableIdHelper {
     public static void printLocalVariables(byte[] classData, String methodName, Type... argTypes) {
         List<String> locals = listLocalVariables(classData, methodName, argTypes);
         for (String str : locals) {
-            System.out.println(str);
+            getLogger().debug(str);
         }
     }
 

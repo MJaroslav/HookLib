@@ -5,6 +5,7 @@ import org.objectweb.asm.ClassVisitor;
 
 import java.io.InputStream;
 
+@SuppressWarnings("unused")
 public class ReadClassHelper {
 
     public static InputStream getClassData(String className) {
